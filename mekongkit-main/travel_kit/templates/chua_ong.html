@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chùa Ông - Cần Thơ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- Thư viện 360° -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fdfdfd;
+            color: #333;
+        }
+
+        header {
+            position: relative;
+            background: linear-gradient(135deg, #d81b60, #f06292);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        header h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        /* Nút quay lại dashboard */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #d81b60;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #f8bbd0;
+            color: #880e4f;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        .highlight {
+            background: #fce4ec;
+            padding: 20px;
+            border-left: 6px solid #ec407a;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        img {
+            width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background: #d81b60;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            margin-top: 20px;
+            background: #d81b60;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #ad1457;
+        }
+        /* Phần camera 360° */
+        .viewer-360 {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .viewer-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+            animation: fadeHint 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeHint {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Accordion story */
+        .story-btn {
+            width: 100%;
+            padding: 18px 22px;
+            border: none;
+            border-radius: 14px;
+            background: #fff8e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: background 0.3s ease;
+        }
+
+        .story-btn:hover {
+            background: #fff3cd;
+        }
+
+        .story-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .story-icon {
+            width: 42px;
+            height: 42px;
+            background: #ffe082;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+        }
+
+        .story-text h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .story-text p {
+            margin: 2px 0 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .story-arrow {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .story-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        /* Nội dung ẩn/hiện */
+        .story-content {
+            margin-top: 15px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: fadeDown 0.4s ease;
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>🏮 Chùa Ông (Quảng Triệu Hội Quán)</h1>
+        <p>Ngôi chùa linh thiêng giữa lòng Cần Thơ</p>
+    </header>
+
+
+    <!-- 📖 CÂU CHUYỆN VĂN HÓA -->
+    <button class="story-btn" onclick="toggleStory()">
+        <div class="story-left">
+            <div class="story-icon">📖</div>
+            <div class="story-text">
+                <h2>Câu chuyện văn hóa</h2>
+                <p>Tìm hiểu lịch sử & ý nghĩa của Chùa Ông</p>
+            </div>
+        </div>
+        <div id="storyArrow" class="story-arrow">⌄</div>
+    </button>
+
+    
+    <div id="storyContent" class="story-content">
+        <p>
+            <a href="{{ url_for('dashboard') }}" class="back-btn">⬅️ Quay lại Dashboard</a>
+            <strong>Chùa Ông</strong> nằm tại trung tâm quận Ninh Kiều, được xây dựng bởi cộng đồng người Hoa Quảng
+            Đông.
+            Đây là một trong những công trình kiến trúc tiêu biểu thể hiện nét văn hóa và tín ngưỡng đặc sắc của người
+            Hoa ở Cần Thơ.
+        </p>
+
+        <p>
+            Chùa Ông, còn được gọi là Quảng Triệu Hội Quán, được xây dựng vào cuối thế kỷ XIX và thờ Quan Thánh Đế Quân
+            – biểu tượng của sự trung nghĩa, chính trực và lòng dũng cảm. Ngôi chùa nổi bật với kiến trúc mang đậm phong
+            cách Trung Hoa, từ mái ngói cong uốn lượn, cột trụ chạm khắc rồng phượng tinh xảo đến những bức hoành phi,
+            câu đối sơn son thếp vàng lộng lẫy.
+        </p>
+        <p>
+            Mỗi dịp lễ hội, đặc biệt là Tết Nguyên Đán hay lễ vía Quan Thánh, chùa Ông thu hút đông đảo người dân và du
+            khách đến cầu bình an, may mắn và tài lộc. Không chỉ là nơi sinh hoạt tín ngưỡng, chùa Ông còn là minh chứng
+            sống động cho sự giao thoa văn hóa Việt – Hoa, góp phần làm phong phú thêm bản sắc văn hóa của vùng đất Cần
+            Thơ.
+        </p>
+
+        <p>
+            Ngoài giá trị tâm linh, <strong>chùa Ông</strong> còn được xem là một tác phẩm nghệ thuật độc đáo. Toàn bộ
+            công trình được xây dựng theo lối kiến trúc truyền thống Trung Hoa với gam màu đỏ – vàng chủ đạo, tượng
+            trưng cho may mắn và thịnh vượng. Bên trong chánh điện, từng bức hoành phi, câu đối, tượng gỗ đều được chạm
+            trổ công phu, thể hiện tài hoa của các nghệ nhân xưa. Những bức tượng Quan Công, Châu Thương, Quan Bình được
+            tạc với thần thái uy nghi, thể hiện tinh thần tôn sùng nghĩa khí của người Hoa.
+        </p>
+        <p>
+            Một điểm đặc biệt khác là phần mái chùa được trang trí bằng hàng trăm tượng gốm nhỏ mang hình long, lân,
+            quy, phụng – bốn linh vật tượng trưng cho quyền lực, sự bảo hộ và may mắn. Khi ánh nắng chiếu vào, mái ngói
+            lấp lánh phản chiếu ánh vàng đỏ, tạo nên vẻ uy nghiêm nhưng vẫn vô cùng rực rỡ.
+        </p>
+        <p>
+            Không chỉ là nơi thờ tự, chùa Ông còn là trung tâm sinh hoạt cộng đồng của người Hoa tại Cần Thơ. Vào những
+            dịp lễ hội truyền thống như lễ Nguyên Tiêu, Trung Thu hay Tết Nguyên Đán, nơi đây tổ chức nhiều hoạt động
+            văn hóa đặc sắc như múa lân sư rồng, thả đèn, hát tuồng cổ… tạo nên không khí nhộn nhịp, gắn kết cộng đồng.
+        </p>
+        <p>
+            Với giá trị lịch sử, văn hóa và nghệ thuật kiến trúc độc đáo, chùa Ông không chỉ là điểm đến tâm linh mà còn
+            là di tích văn hóa tiêu biểu của thành phố Cần Thơ, phản ánh sinh động quá trình giao thoa văn hóa giữa
+            người Việt và người Hoa trên mảnh đất miền Tây hiền hòa.
+        </p>
+
+
+
+        <img src="{{ url_for('static', filename='images/chua-ong.jpg') }}" alt="Chùa Ông Cần Thơ">
+
+        <h2 style="margin-top:40px;">🎥 Trải nghiệm không gian 360°</h2>
+        <p>Kéo chuột hoặc xoay điện thoại để khám phá toàn cảnh Chùa Ông.</p>
+
+        <div class="viewer-360">
+            <a-scene embedded vr-mode-ui="enabled: true">
+                <!-- Ảnh panorama 360 -->
+                <a-sky src="{{ url_for('static', filename='images/chua-ong.jpg') }}" rotation="0 -90 0">
+                </a-sky>
+
+                <!-- Camera: chỉ xoay, không di chuyển -->
+                <a-camera look-controls="enabled: true" wasd-controls-enabled="false">
+                </a-camera>
+            </a-scene>
+
+            <!-- Overlay hướng dẫn giống Viewer360.tsx -->
+            <div class="viewer-hint">
+                🖱️ Kéo để khám phá không gian 360°
+            </div>
+        </div>
+        <div class="highlight">
+            <h2>✨ Điểm nổi bật</h2>
+            <ul>
+                <li>✔️ Kiến trúc Trung Hoa cổ kính, chạm trổ tinh xảo</li>
+                <li>✔️ Thờ Quan Thánh Đế Quân – vị thần biểu trưng cho chính nghĩa</li>
+                <li>✔️ Không gian linh thiêng, mùi hương trầm đặc trưng</li>
+                <li>✔️ Được công nhận là di tích kiến trúc nghệ thuật cấp quốc gia</li>
+                <li>✔️ Những bức phù điêu và tượng gốm trang trí sống động kể lại tích truyện Trung Hoa xưa</li>
+                <li>✔️ Màu sắc chủ đạo đỏ – vàng tượng trưng cho may mắn và thịnh vượng</li>
+                <li>✔️ Là trung tâm sinh hoạt văn hóa của cộng đồng người Hoa tại Cần Thơ</li>
+                <li>✔️ Các lễ hội truyền thống được tổ chức hằng năm, thu hút đông đảo du khách và phật tử</li>
+            </ul>
+        </div>
+
+        <p>Chùa Ông không chỉ là nơi linh thiêng để chiêm bái và cầu an, mà còn là biểu tượng văn hóa đặc sắc, thể hiện
+            rõ dấu ấn giao thoa giữa nghệ thuật, tín ngưỡng và lịch sử của cộng đồng người Hoa trên đất Cần Thơ.</p>
+
+        <a href="https://www.google.com/maps/place/Ch%C3%B9a+%C3%94ng+C%E1%BA%A7n+Th%C6%A1+(+Qu%E1%BA%A3ng+Tri%E1%BB%87u+H%E1%BB%99i+Qu%C3%A1n+)/@10.0869067,105.6436419,11.25z/data=!4m10!1m2!2m1!1zQ2jDuWEgw7RuZw!3m6!1s0x31a0629e9e0072c5:0x45ff04519813c779!8m2!3d10.0341908!4d105.7884804!15sCgpDaMO5YSDDtG5nWgwiCmNow7lhIMO0bmeSARBwbGFjZV9vZl93b3JzaGlwqgEyEAEyHhABIho_tSnfyetC_ZvraABUQKTPmbjBmmUSl67ohDIOEAIiCmNow7lhIMO0bmfgAQA!16s%2Fg%2F1269n12wr?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D"
+            target="_blank" class="btn">📍 Xem vị trí trên Google Maps</a>
+    </div>
+
+    <footer>© 2025 Du lịch Cần Thơ - Chùa Ông</footer>
+
+    <script>
+        function toggleStory() {
+            const c = document.getElementById("storyContent");
+            const isOpen = c.style.display === "block";
+
+            c.style.display = isOpen ? "none" : "block";
+
+            if (!isOpen) {
+                // ⏱ đợi accordion mở xong rồi resize A-Frame
+                setTimeout(() => {
+                    const scene = c.querySelector("a-scene");
+                    if (scene) {
+                        scene.resize();
+                    }
+                }, 200);
+            }
+        }
+
+        /* GAME */
+        let player = { x: 0, y: 0 };
+        const goal = { x: 4, y: 4 };
+        const obstacles = ["1,1", "2,1", "3,2"];
+
+        function openChallenge() {
+            document.getElementById("challengeModal").style.display = "flex";
+            player = { x: 0, y: 0 };
+            draw();
+        }
+
+        function draw() {
+            const g = document.getElementById("game");
+            g.innerHTML = "";
+            for (let y = 0; y < 5; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const d = document.createElement("div");
+                    d.style.width = d.style.height = "50px";
+                    d.style.display = "flex";
+                    d.style.alignItems = d.style.justifyContent = "center";
+                    d.style.borderRadius = "8px";
+                    if (x === player.x && y === player.y) { d.textContent = "🧍"; d.style.background = "#bbdefb"; }
+                    else if (x === goal.x && y === goal.y) { d.textContent = "🎯"; d.style.background = "#c8e6c9"; }
+                    else if (obstacles.includes(`${x},${y}`)) { d.textContent = "⛔"; d.style.background = "#ffcdd2"; }
+                    else d.style.background = "#eee";
+                    g.appendChild(d);
+                }
+            }
+        }
+
+        function move(dx, dy) {
+            const nx = player.x + dx, ny = player.y + dy;
+            if (nx < 0 || ny < 0 || nx > 4 || ny > 4) return;
+            if (obstacles.includes(`${nx},${ny}`)) return;
+            player = { x: nx, y: ny };
+            draw();
+            if (nx === goal.x && ny === goal.y) {
+                setTimeout(() => {
+                    alert("🎉 Check-in thành công!");
+                    document.getElementById("challengeModal").style.display = "none";
+                    handleCheckin();
+                }, 300);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

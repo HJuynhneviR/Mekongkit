@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Cầu đi bộ - Cần Thơ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- Thư viện 360° -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fdfdfd;
+            color: #333;
+        }
+        header {
+            background: linear-gradient(135deg, #8e24aa, #ab47bc);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative; /* để gắn nút quay lại */
+        }
+        header h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* 🔙 Nút quay lại Dashboard */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            background: #6a1b9a;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        .back-btn:hover {
+            background: #4a148c;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+        .highlight {
+            background: #f3e5f5;
+            padding: 20px;
+            border-left: 6px solid #8e24aa;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        img {
+            width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        footer {
+            background: #8e24aa;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: 40px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            margin-top: 20px;
+            background: #8e24aa;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #6a1b9a;
+        }
+        /* Phần camera 360° */
+        .viewer-360 {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .viewer-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+            animation: fadeHint 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeHint {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Accordion story */
+        .story-btn {
+            width: 100%;
+            padding: 18px 22px;
+            border: none;
+            border-radius: 14px;
+            background: #fff8e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: background 0.3s ease;
+        }
+
+        .story-btn:hover {
+            background: #fff3cd;
+        }
+
+        .story-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .story-icon {
+            width: 42px;
+            height: 42px;
+            background: #ffe082;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+        }
+
+        .story-text h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .story-text p {
+            margin: 2px 0 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .story-arrow {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .story-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        /* Nội dung ẩn/hiện */
+        .story-content {
+            margin-top: 15px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: fadeDown 0.4s ease;
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- 🔙 Nút quay lại -->
+        <a href="{{ url_for('dashboard') }}" class="back-btn">⬅️ Quay lại Dashboard</a>
+        
+        <h1>🌉 Cầu đi bộ Cần Thơ</h1>
+        <p>Nét đẹp lung linh bên bến Ninh Kiều</p>
+    </header>
+
+    <!-- 📖 CÂU CHUYỆN VĂN HÓA -->
+    <button class="story-btn" onclick="toggleStory()">
+        <div class="story-left">
+            <div class="story-icon">📖</div>
+            <div class="story-text">
+                <h2>Câu chuyện văn hóa</h2>
+                <p>Tìm hiểu lịch sử & ý nghĩa của Cầu Đi Bộ</p>
+            </div>
+        </div>
+        <div id="storyArrow" class="story-arrow">⌄</div>
+    </button>
+
+    <div id="storyContent" class="story-content">
+        <p>
+            <strong>Cầu đi bộ Cần Thơ</strong> nằm cạnh bến Ninh Kiều, là điểm dạo mát và ngắm cảnh tuyệt vời. 
+            Vào buổi tối, cây cầu được thắp sáng rực rỡ, thu hút đông đảo du khách và người dân địa phương.
+        </p>
+        <p>
+            Cầu đi bộ Cần Thơ được khánh thành vào năm 2016, bắc qua rạch Khai Luông, nối liền bến Ninh Kiều với cồn Cái Khế. 
+            Cây cầu có thiết kế hiện đại với dáng cong mềm mại, được ví như dải lụa vắt ngang dòng sông Hậu hiền hòa, tạo điểm nhấn
+            độc đáo cho không gian trung tâm thành phố.
+        </p>
+
+        <p>
+            Vào ban ngày, cầu là nơi lý tưởng để du khách tản bộ, ngắm nhìn tàu thuyền qua lại và chiêm ngưỡng vẻ đẹp bình dị của
+            sông nước miền Tây. Khi màn đêm buông xuống, hệ thống đèn LED nhiều màu sắc được bật sáng, phản chiếu xuống mặt nước
+            tạo nên khung cảnh lung linh huyền ảo, thu hút nhiều bạn trẻ và du khách đến check-in, chụp ảnh.
+        </p>
+
+        <p>
+            Trên cầu, du khách có thể phóng tầm mắt ngắm toàn cảnh bến Ninh Kiều, sông Hậu và khu vực trung tâm Cần Thơ về đêm –
+            nơi những ánh đèn rực rỡ hòa cùng tiếng sóng vỗ nhẹ, mang lại cảm giác thư thái và lãng mạn. Không chỉ là công trình kiến trúc,
+            cầu đi bộ còn trở thành biểu tượng cho sự năng động, hiện đại và phát triển của thành phố Cần Thơ hôm nay.
+        </p>
+
+        <p>
+            Ngoài ra, vào các dịp lễ hội như Tết Nguyên Đán hay Lễ hội Đờn ca tài tử, khu vực cầu đi bộ và bến Ninh Kiều thường diễn ra
+            nhiều hoạt động văn hóa – nghệ thuật đặc sắc như bắn pháo hoa, biểu diễn âm nhạc và chợ hoa xuân, mang đến bầu không khí
+            vui tươi, rộn ràng cho người dân và du khách.
+        </p>
+
+        <img src="{{ url_for('static', filename='images/cau-di-bo.jpg') }}" alt="Cầu đi bộ">
+
+        <h2 style="margin-top:40px;">🎥 Trải nghiệm không gian 360°</h2>
+        <p>Kéo chuột hoặc xoay điện thoại để khám phá toàn cảnh Cầu đi bộ.</p>
+
+        <div class="viewer-360">
+            <a-scene embedded vr-mode-ui="enabled: true">
+                <!-- Ảnh panorama 360 -->
+                <a-sky src="{{ url_for('static', filename='images/cau-di-bo.jpg') }}" rotation="0 -90 0">
+                </a-sky>
+
+                <!-- Camera: chỉ xoay, không di chuyển -->
+                <a-camera look-controls="enabled: true" wasd-controls-enabled="false">
+                </a-camera>
+            </a-scene>
+
+            <!-- Overlay hướng dẫn giống Viewer360.tsx -->
+            <div class="viewer-hint">
+                🖱️ Kéo để khám phá không gian 360°
+            </div>
+        </div>
+
+        <div class="highlight">
+            <h2>✨ Điểm nổi bật</h2>
+            <ul>
+                <li>✔️ View sông Hậu tuyệt đẹp</li>
+                <li>✔️ Ánh sáng lung linh ban đêm</li>
+                <li>✔️ Nối liền bến Ninh Kiều với cồn Cái Khế</li>
+                <li>✔️ Thích hợp để dạo mát và chụp ảnh</li>
+                <li>✔️ Thiết kế cong mềm mại, tạo điểm nhấn kiến trúc giữa lòng thành phố</li>
+                <li>✔️ Là địa điểm lý tưởng để ngắm hoàng hôn và toàn cảnh Cần Thơ về đêm</li>
+                <li>✔️ Thường xuyên diễn ra các sự kiện, lễ hội và hoạt động văn hóa sôi động</li>
+                <li>✔️ Gần nhiều điểm tham quan nổi tiếng khác như Công viên Ninh Kiều, Bến tàu du lịch, Chợ đêm</li>
+            </ul>
+        </div>
+
+        <p>
+            Cầu đi bộ Cần Thơ không chỉ là nơi dừng chân lý tưởng để tận hưởng không khí mát lành của sông Hậu, 
+            mà còn là biểu tượng cho vẻ đẹp hiện đại hòa quyện cùng nét duyên dáng của vùng đất Tây Đô. 
+            Với ánh đèn rực rỡ, dòng người tản bộ nhịp nhàng và khung cảnh lãng mạn bên bờ sông, nơi đây mang đến 
+            cho du khách những phút giây thư giãn, bình yên và những bức ảnh kỷ niệm thật đáng nhớ.
+        </p>
+
+
+        <a href="https://www.google.com/maps/place/C%E1%BA%A7u+%C4%91i+b%E1%BB%99+Ninh+Ki%E1%BB%81u/@10.0370957,105.786405,17z/data=!3m1!4b1!4m6!3m5!1s0x31a06300230b4cd3:0x509ca5c25ce87a15!8m2!3d10.0370957!4d105.7912759!16s%2Fg%2F11w4r8j02w?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="btn">📍 Xem vị trí trên Google Maps</a>
+    </div>
+
+    <footer>
+        © 2025 Du lịch Cần Thơ - Cầu đi bộ
+    </footer>
+
+    <script>
+        function toggleStory() {
+            const c = document.getElementById("storyContent");
+            const isOpen = c.style.display === "block";
+
+            c.style.display = isOpen ? "none" : "block";
+
+            if (!isOpen) {
+                // ⏱ đợi accordion mở xong rồi resize A-Frame
+                setTimeout(() => {
+                    const scene = c.querySelector("a-scene");
+                    if (scene) {
+                        scene.resize();
+                    }
+                }, 200);
+            }
+        }
+
+        /* GAME */
+        let player = { x: 0, y: 0 };
+        const goal = { x: 4, y: 4 };
+        const obstacles = ["1,1", "2,1", "3,2"];
+
+        function openChallenge() {
+            document.getElementById("challengeModal").style.display = "flex";
+            player = { x: 0, y: 0 };
+            draw();
+        }
+
+        function draw() {
+            const g = document.getElementById("game");
+            g.innerHTML = "";
+            for (let y = 0; y < 5; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const d = document.createElement("div");
+                    d.style.width = d.style.height = "50px";
+                    d.style.display = "flex";
+                    d.style.alignItems = d.style.justifyContent = "center";
+                    d.style.borderRadius = "8px";
+                    if (x === player.x && y === player.y) { d.textContent = "🧍"; d.style.background = "#bbdefb"; }
+                    else if (x === goal.x && y === goal.y) { d.textContent = "🎯"; d.style.background = "#c8e6c9"; }
+                    else if (obstacles.includes(`${x},${y}`)) { d.textContent = "⛔"; d.style.background = "#ffcdd2"; }
+                    else d.style.background = "#eee";
+                    g.appendChild(d);
+                }
+            }
+        }
+
+        function move(dx, dy) {
+            const nx = player.x + dx, ny = player.y + dy;
+            if (nx < 0 || ny < 0 || nx > 4 || ny > 4) return;
+            if (obstacles.includes(`${nx},${ny}`)) return;
+            player = { x: nx, y: ny };
+            draw();
+            if (nx === goal.x && ny === goal.y) {
+                setTimeout(() => {
+                    alert("🎉 Check-in thành công!");
+                    document.getElementById("challengeModal").style.display = "none";
+                    handleCheckin();
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html>

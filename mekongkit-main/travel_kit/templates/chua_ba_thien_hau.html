@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chùa Bà Thiên Hậu - Cần Thơ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> <!-- Thư viện 360° -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fff3e0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ef6c00, #ff9800);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: white;
+            color: #ef6c00;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.3s;
+            border: 2px solid #ef6c00;
+        }
+
+        .back-btn:hover {
+            background: #ef6c00;
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        .highlight {
+            background: #fff8e1;
+            padding: 20px;
+            border-left: 6px solid #f57c00;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        img {
+            width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        footer {
+            background: #ef6c00;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ef6c00;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #e65100;
+        }
+        /* Phần camera 360° */
+        .viewer-360 {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .viewer-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            pointer-events: none;
+            animation: fadeHint 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeHint {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* Accordion story */
+        .story-btn {
+            width: 100%;
+            padding: 18px 22px;
+            border: none;
+            border-radius: 14px;
+            background: #fff8e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: background 0.3s ease;
+        }
+
+        .story-btn:hover {
+            background: #fff3cd;
+        }
+
+        .story-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .story-icon {
+            width: 42px;
+            height: 42px;
+            background: #ffe082;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+        }
+
+        .story-text h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .story-text p {
+            margin: 2px 0 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .story-arrow {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .story-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        /* Nội dung ẩn/hiện */
+        .story-content {
+            margin-top: 15px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: fadeDown 0.4s ease;
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">⬅️ Quay lại Dashboard</a>
+
+        <h1>🕍 Chùa Bà Thiên Hậu</h1>
+        <p>Nơi tôn vinh vị nữ thần bảo hộ biển cả</p>
+    </header>
+
+
+    <!-- 📖 CÂU CHUYỆN VĂN HÓA -->
+    <button class="story-btn" onclick="toggleStory()">
+        <div class="story-left">
+            <div class="story-icon">📖</div>
+            <div class="story-text">
+                <h2>Câu chuyện văn hóa</h2>
+                <p>Tìm hiểu lịch sử & ý nghĩa của Chùa Bà Thiên Hậu</p>
+            </div>
+        </div>
+        <div id="storyArrow" class="story-arrow">⌄</div>
+    </button>
+
+    <div id="storyContent" class="story-content">
+        <p>
+            <strong>Chùa Bà Thiên Hậu</strong> là điểm đến linh thiêng của cộng đồng người Hoa,
+            nơi thờ Thiên Hậu Thánh Mẫu – vị thần che chở người đi biển.
+            Chùa mang kiến trúc đậm nét Hoa và thường tổ chức lễ hội lớn vào tháng 3 âm lịch.
+        </p>
+
+        <p> <strong>Chùa Bà Thiên Hậu</strong>, còn gọi là <em>Thiên Hậu Cung</em>, được xây dựng vào cuối thế kỷ XIX và
+            là một trong những ngôi chùa cổ kính nhất của người Hoa tại Cần Thơ. Ngôi chùa được cộng đồng người Hoa
+            Quảng Đông dựng nên để tỏ lòng biết ơn và cầu xin sự phù hộ của <strong>Thiên Hậu Thánh Mẫu</strong> – vị nữ
+            thần được xem là người bảo vệ ngư dân, thương nhân và những ai đi lại trên sông biển. </p>
+
+        <p>
+            Chùa nổi bật với <strong>kiến trúc Trung Hoa cổ truyền</strong>, mái ngói cong hình đao, những bức phù điêu
+            rồng phượng sinh động và tượng Bà Thiên Hậu uy nghi trong chính điện.
+            Từng chi tiết trang trí, từ hoành phi, câu đối, đến các bức tượng gốm sứ đều được chạm trổ công phu, mang
+            giá trị nghệ thuật cao. Không gian chùa thoang thoảng hương trầm, tạo cảm giác trang nghiêm và tĩnh tại giữa
+            lòng đô thị náo nhiệt.
+        </p>
+
+        <p>
+            Hàng năm, vào <strong>rằm tháng 3 âm lịch</strong>, chùa tổ chức <strong>Lễ vía Bà Thiên Hậu</strong> – một
+            trong những lễ hội lớn nhất của người Hoa ở miền Tây Nam Bộ.
+            Lễ hội diễn ra trong không khí tưng bừng với các nghi thức cúng tế, múa lân – sư – rồng và những hoạt động
+            văn hóa đặc sắc, thu hút đông đảo phật tử và du khách thập phương đến chiêm bái, cầu bình an, tài lộc.
+        </p>
+
+        <p>
+            Ngày nay, Chùa Bà Thiên Hậu không chỉ là nơi thờ tự linh thiêng mà còn là <strong>điểm đến văn hóa – tâm
+                linh tiêu biểu</strong>, thể hiện sự giao thoa văn hóa Việt – Hoa đặc sắc, góp phần làm nên bản sắc đa
+            dạng của vùng đất Cần Thơ.
+        </p>
+
+
+        <img src="{{ url_for('static', filename='images/chua-ba-thien-hau.jpg') }}" alt="Chùa Bà Thiên Hậu">
+
+        <h2 style="margin-top:40px;">🎥 Trải nghiệm không gian 360°</h2>
+        <p>Kéo chuột hoặc xoay điện thoại để khám phá toàn cảnh Chùa Bà Thiên Hậu.</p>
+
+        <div class="viewer-360">
+            <a-scene embedded vr-mode-ui="enabled: true">
+                <!-- Ảnh panorama 360 -->
+                <a-sky src="{{ url_for('static', filename='images/chua-ba-thien-hau.jpg') }}" rotation="0 -90 0">
+                </a-sky>
+
+                <!-- Camera: chỉ xoay, không di chuyển -->
+                <a-camera look-controls="enabled: true" wasd-controls-enabled="false">
+                </a-camera>
+            </a-scene>
+
+            <!-- Overlay hướng dẫn giống Viewer360.tsx -->
+            <div class="viewer-hint">
+                🖱️ Kéo để khám phá không gian 360°
+            </div>
+        </div>
+        <div class="highlight">
+            <h2>🔥 Điểm nổi bật</h2>
+            <ul>
+                <li>✔️ Lễ hội Thiên Hậu Thánh Mẫu sôi động</li>
+                <li>✔️ Kiến trúc cổ kính và tượng thần tinh xảo</li>
+                <li>✔️ Không khí trang nghiêm và linh thiêng</li>
+                <li>✔️ Tượng Thiên Hậu Thánh Mẫu được tạc tinh tế, thể hiện lòng tôn kính của người Hoa</li>
+                <li>✔️ Những hoành phi, câu đối, tượng gốm sứ được sơn son thếp vàng mang giá trị nghệ thuật cao</li>
+                <li>✔️ Là nơi sinh hoạt tín ngưỡng quan trọng của cộng đồng người Hoa Cần Thơ</li>
+                <li>✔️ Lễ hội diễn ra hằng năm với các hoạt động múa lân, rước kiệu và dâng hương cầu phúc</li>
+                <li>✔️ Điểm đến văn hóa – tâm linh đặc sắc, thể hiện sự giao thoa văn hóa Việt – Hoa</li>
+            </ul>
+        </div>
+
+        <p>Chùa Bà Thiên Hậu không chỉ là nơi gửi gắm niềm tin tâm linh của cộng đồng người Hoa, mà còn là minh chứng
+            sống động cho sự giao hòa văn hóa Việt – Hoa trên vùng đất Cần Thơ trù phú. Mỗi mùa lễ hội, nơi đây lại rực
+            rỡ sắc màu và tràn ngập không khí linh thiêng, trở thành điểm dừng chân không thể bỏ lỡ của du khách gần xa.
+        </p>
+
+
+        <a href="https://www.google.com/maps/place/Ch%C3%B9a+B%C3%A0+Thi%C3%AAn+H%E1%BA%ADu+-+C%C3%A1i+R%C4%83ng+%E5%A4%A9%E5%90%8E%E5%8F%A4%E5%BB%9F/@10.1622798,105.3579186,10.81z/data=!4m10!1m2!2m1!1zY2jDuWEgYsOgIHRoacOqbiBo4bqtdQ!3m6!1s0x31a089afe9ea6fdf:0x731ede08957fc2c8!8m2!3d10.0030306!4d105.745837!15sChZjaMO5YSBiw6AgdGhpw6puIGjhuq11kgEQcGxhY2Vfb2Zfd29yc2hpcKoBPhABMh4QASIaIAUIvOlqNBCL9lljCBFhOD4DNLV3ugLs8cEyGhACIhZjaMO5YSBiw6AgdGhpw6puIGjhuq114AEA!16s%2Fg%2F11cnb9vmyv?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D"
+            target="_blank" class="btn">📍 Xem vị trí trên Google Maps</a>
+    </div>
+
+    <footer>© 2025 Du lịch Cần Thơ - Chùa Bà Thiên Hậu</footer>
+
+    <script>
+        function toggleStory() {
+            const c = document.getElementById("storyContent");
+            const isOpen = c.style.display === "block";
+
+            c.style.display = isOpen ? "none" : "block";
+
+            if (!isOpen) {
+                // ⏱ đợi accordion mở xong rồi resize A-Frame
+                setTimeout(() => {
+                    const scene = c.querySelector("a-scene");
+                    if (scene) {
+                        scene.resize();
+                    }
+                }, 200);
+            }
+        }
+
+        /* GAME */
+        let player = { x: 0, y: 0 };
+        const goal = { x: 4, y: 4 };
+        const obstacles = ["1,1", "2,1", "3,2"];
+
+        function openChallenge() {
+            document.getElementById("challengeModal").style.display = "flex";
+            player = { x: 0, y: 0 };
+            draw();
+        }
+
+        function draw() {
+            const g = document.getElementById("game");
+            g.innerHTML = "";
+            for (let y = 0; y < 5; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const d = document.createElement("div");
+                    d.style.width = d.style.height = "50px";
+                    d.style.display = "flex";
+                    d.style.alignItems = d.style.justifyContent = "center";
+                    d.style.borderRadius = "8px";
+                    if (x === player.x && y === player.y) { d.textContent = "🧍"; d.style.background = "#bbdefb"; }
+                    else if (x === goal.x && y === goal.y) { d.textContent = "🎯"; d.style.background = "#c8e6c9"; }
+                    else if (obstacles.includes(`${x},${y}`)) { d.textContent = "⛔"; d.style.background = "#ffcdd2"; }
+                    else d.style.background = "#eee";
+                    g.appendChild(d);
+                }
+            }
+        }
+
+        function move(dx, dy) {
+            const nx = player.x + dx, ny = player.y + dy;
+            if (nx < 0 || ny < 0 || nx > 4 || ny > 4) return;
+            if (obstacles.includes(`${nx},${ny}`)) return;
+            player = { x: nx, y: ny };
+            draw();
+            if (nx === goal.x && ny === goal.y) {
+                setTimeout(() => {
+                    alert("🎉 Check-in thành công!");
+                    document.getElementById("challengeModal").style.display = "none";
+                    handleCheckin();
+                }, 300);
+            }
+        }
+    </script>
+</body>
+
+</html>
